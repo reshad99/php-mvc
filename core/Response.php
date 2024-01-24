@@ -8,4 +8,14 @@ class Response
     {
         http_response_code($code);
     }
+
+    public function redirectBack()
+    {
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+    }
+
+    public function redirect($location)
+    {
+        header("Location: $location");
+    }
 }

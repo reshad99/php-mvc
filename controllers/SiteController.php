@@ -11,8 +11,15 @@ class SiteController extends Controller
 {
     public function index()
     {
-        $name = 'Rashad';
-        return $this->view('front.home', compact('name'));
+        try {
+            $name = 'Rashad';
+            $user = new User;
+            $users = $user->select()->get();
+            return $this->view('front.home', compact('name', 'users'));
+        } catch (\Exception $e) {
+            throw $e;
+        }
+       
     }
 
     public function indexContact()

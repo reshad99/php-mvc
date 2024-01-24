@@ -17,20 +17,34 @@ class Router
         $this->request = $request;
     }
 
-    public static function get($path, $callback)
+    public static function get($path, $callback, array $middlewares = [])
     {
         self::$routes['get'][$path] = $callback;
+
+        if (count($middlewares)) {
+            self::$routes['get'][$path]['middlewares'] = $middlewares;
+        }
+
+        return app()->router;
     }
 
-    public static function post($path, $callback)
+    public static function post($path, $callback, array $middlewares = [])
     {
         self::$routes['post'][$path] = $callback;
+
+        if (count($middlewares)) {
+            self::$routes['post'][$path]['middlewares'] = $middlewares;
+        }
+
+        return app()->router;
     }
 
     public function resolve()
     {
         $path = $this->request->getPath();
         $method = $this->request->getMethod();
+        $this->request->generateToken();
+        $this->request->verifyCsrfToken();
         $callback = self::$routes[$method][$path] ?? false;
 
         if ($callback === false) {
@@ -47,9 +61,18 @@ class Router
             $controller = $callback[0];
             $method = $callback[1];
 
+
+            if (isset($callback['middlewares']) && !empty($callback['middlewares'])) {
+                foreach ($callback['middlewares'] as $middleware) {
+                    if (!$this->checkMiddleware($middleware)) {
+                        return response()->redirectBack();
+                    }
+                }
+            }
+
             if (isset($callback[2]) && is_subclass_of($callback[2], Request::class)) {
                 $request = new $callback[2]();
-            } 
+            }
 
             return call_user_func([$controller, $method], $request);
         }
@@ -59,8 +82,8 @@ class Router
     {
         $viewPath = str_replace('.', '/', $view);
 
-        $layoutContent = $this->layoutContent($layout);
         $viewContent = $this->renderOnlyView($viewPath, $params);
+        $layoutContent = $this->layoutContent($layout);
         return str_replace('{{ content }}', $viewContent, $layoutContent);
     }
 
@@ -85,5 +108,11 @@ class Router
         ob_start();
         include_once Application::$rootDir . "/views/$view.php";
         return ob_get_clean();
+    }
+
+    private function checkMiddleware(string $className)
+    {
+        $instance = new $className();
+        return $instance->run();
     }
 }

@@ -17,10 +17,12 @@ class Session
         return $_SESSION[$key] ?? null;
     }
 
-    public static function get($key)
+    public static function get($key, $unset = false)
     {
         $value = $_SESSION[$key] ?? null;
-        unset($_SESSION[$key]);
+        if ($unset) {
+            unset($_SESSION[$key]);
+        }
         return $value;
     }
 }

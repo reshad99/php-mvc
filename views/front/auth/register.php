@@ -13,6 +13,7 @@ if (Session::check('errors')) {
 
 <div class="mb-3">
   <?php echo $form->field('Ad soyad', 'full_name') ?>
+  <input name="csrf_token" value="<?= Session::get('csrf_token') ?>" type="hidden" class="form-control" id="password">
 </div>
 
 <div class="mb-3">

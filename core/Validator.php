@@ -2,11 +2,13 @@
 
 namespace app\core;
 
+use PDO;
+
 class Validator
 {
     private $data;
     private $errors = [];
-    private static $rules = ['required', 'email', 'min', 'max', 'array', 'confirmed'];
+    private static $rules = ['required', 'email', 'min', 'max', 'array', 'confirmed', 'unique'];
 
     public function __construct($data)
     {
@@ -17,7 +19,7 @@ class Validator
     {
         foreach ($rules as $field => $ruleArray) {
             $value = $this->data[$field] ?? null;
-    
+
             foreach ($ruleArray as $rule) {
                 if (is_string($rule)) {
                     // Basit kural: 'required', 'email', vb.
@@ -34,10 +36,10 @@ class Validator
                 }
             }
         }
-    
+
         return $this;
     }
-    
+
 
     private function required($field, $value)
     {
@@ -64,6 +66,17 @@ class Validator
     {
         if (strlen($value) > $threshold) {
             $this->addError($field, "$field must not exceed $threshold characters");
+        }
+    }
+
+    private function unique($field, $value, $table, $column, $exceptionId = null)
+    {
+        $exceptionQuery = $exceptionId ? " AND id != $exceptionId" : "";
+        $statement = pdo()->prepare("SELECT * FROM $table WHERE $column = $value $exceptionQuery");
+        $statement->execute();
+        $check = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if (isset($check)) {
+            $this->addError($field, "This $field is already in our database");
         }
     }
 

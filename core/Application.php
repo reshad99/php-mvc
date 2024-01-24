@@ -8,6 +8,8 @@ class Application
     public Router $router;
     public IRequest $request;
     public Response $response;
+    public Database $database;
+    public Auth $auth;
     public static Application $app;
 
     public function __construct(string $rootPath)
@@ -16,6 +18,8 @@ class Application
         self::$app = $this;
         $this->request = new Request;
         $this->response = new Response;
+        $this->database = new Database;
+        $this->auth = new Auth();
         $this->router = new Router($this->request, $this->response);
     }
 

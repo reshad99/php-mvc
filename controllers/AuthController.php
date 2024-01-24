@@ -24,10 +24,18 @@ class AuthController extends Controller
 
     public function tryRegister(RegisterRequest $request)
     {
-        $body = $request->getBody();
-        $user = new User;
-        $user->fill($body);
-        Session::flash('user', $user);
-        $request->validate($body);
+        try {
+            $body = $request->getBody();
+            $request->validate($body);
+
+            $user = new User;
+            $user->fill($body);
+            $user->password = password_hash($request->password, PASSWORD_BCRYPT);
+            $user->save();
+            Session::flash('user', $user);
+            return json_encode($user);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
     }
 }

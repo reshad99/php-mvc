@@ -12,6 +12,23 @@ class Request implements IRequest
     {
     }
 
+    public function verifyCsrfToken()
+    {
+        if ($this->getMethod() === 'post'  && !$this->expectsJson()) {
+            $postedToken = $this->getBody()['csrf_token'] ?? '';
+            if (!Csrf::validateToken($postedToken)) {
+                throw new \Exception("Invalid CSRF token");
+            }
+        }
+    }
+
+    public function generateToken()
+    {
+        if ($this->getMethod() !== 'post') {
+            Csrf::generateToken();
+        }
+    }
+
     public function getPath()
     {
         $path = $_SERVER['REQUEST_URI'] ?? '/';

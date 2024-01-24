@@ -1,1 +1,1 @@
-<h1>Welcome Home <?= $name ?></h1>
+<h1>Welcome Home </h1>

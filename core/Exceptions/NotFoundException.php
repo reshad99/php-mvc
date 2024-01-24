@@ -4,8 +4,8 @@ namespace app\core\Exceptions;
 
 class NotFoundException extends BaseException
 {
-    public function __construct(array $errors = [], $code = 404)
+    public function __construct(string $message = "Page not found", $code = 404)
     {
-        parent::__construct("Page not found", $code, $errors);
+        parent::__construct($message, $code);
     }
 }
