@@ -8,9 +8,7 @@ use Exception;
 class Request implements IRequest
 {
 
-    public function rules()
-    {
-    }
+    public function rules(){}
 
     public function verifyCsrfToken()
     {

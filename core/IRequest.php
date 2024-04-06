@@ -7,7 +7,6 @@ use app\core\Exceptions\ValidationException;
 interface IRequest
 {
 
-    public function rules();
 
     public function getPath();
 

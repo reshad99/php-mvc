@@ -8,13 +8,20 @@ use Exception;
 
 class Auth
 {
+    private static $instance = null;
     protected static array $guards;
     protected static string $guard;
 
-    public function __construct(string $guard = null)
-    {
-        self::$guard = $guard ?? config('auth.default_guard');
+    private function __construct() {
+        self::$guard = config('auth.default_guard');
         self::$guards = config('auth.guards');
+    }
+
+    public static function getInstance() {
+        if (self::$instance === null) {
+            self::$instance = new Auth();
+        }
+        return self::$instance;
     }
 
     public static function attempt(array $credentials, bool $rememberMe = false): bool
@@ -43,7 +50,7 @@ class Auth
     public static function setGuard(string $guard)
     {
         self::$guard = $guard;
-        return self;
+        return self::getInstance();
     }
 
     public static function check()

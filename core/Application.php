@@ -19,7 +19,7 @@ class Application
         $this->request = new Request;
         $this->response = new Response;
         $this->database = new Database;
-        $this->auth = new Auth();
+        $this->auth = Auth::getInstance();
         $this->router = new Router($this->request, $this->response);
     }
 

@@ -22,12 +22,10 @@ class Validator
 
             foreach ($ruleArray as $rule) {
                 if (is_string($rule)) {
-                    // Basit kural: 'required', 'email', vb.
                     if (in_array($rule, self::$rules)) {
                         call_user_func([$this, $rule], $field, $value);
                     }
                 } elseif (is_array($rule)) {
-                    // Parametreli kural: ['min', 3], ['max', 5]
                     $ruleName = $rule[0];
                     $ruleParams = array_slice($rule, 1);
                     if (in_array($ruleName, self::$rules)) {
